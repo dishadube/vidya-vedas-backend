@@ -68,9 +68,32 @@ verifyTransporter(); // Now EMAIL_USER & PASS exist ✔️
 app.use(cors());
 app.use(express.json());
 
-mongoose.connect(process.env.MONGODB_URI)
-  .then(() => console.log('Connected to MongoDB Atlas'))
-  .catch(err => console.error('Connection error:', err));
+// mongoose.connect(process.env.MONGODB_URI)
+//   .then(() => console.log('Connected to MongoDB Atlas'))
+//   .catch(err => console.error('Connection error:', err));
+
+ let isConnected = false;
+
+ async function connectToMongoDB() {
+    try {
+      await mongoose.connect(process.env.MONGODB_URI ,{
+        useNewUrlParser: true,
+        useUnifiedTopology: true,
+      });
+      isConnected = true;
+      console.log('Connected to MongoDB Atlas');
+    } catch (err) {
+      console.error('Connection error:', err);
+    }
+  }
+
+  app.use(async (req, res, next) => {
+    if (!isConnected) {
+      connectToMongoDB();
+    } 
+    next();
+  });
+
 
 app.use("/api/auth", authRoutes);
 app.use("/api/blogs", blogRoutes);
@@ -87,7 +110,8 @@ app.use("/api/service", serviceRoutes);
 app.use("/api/contact", contactRoutes);
 app.use("/api/student", studentRoutes);
 
-app.listen(process.env.PORT, () => {
-  console.log(`Server is running on port ${process.env.PORT || 5000}`);
-});
+// app.listen(process.env.PORT, () => {
+//   console.log(`Server is running on port ${process.env.PORT || 5000}`);
+// });
 
+module.exports = app; // Export app for serverless deployment
