@@ -113,5 +113,4 @@ app.use("/api/student", studentRoutes);
 // app.listen(process.env.PORT, () => {
 //   console.log(`Server is running on port ${process.env.PORT || 5000}`);
 // });
-
-module.exports = app; // Export app for serverless deployment
+export default app;
