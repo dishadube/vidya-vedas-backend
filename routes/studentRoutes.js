@@ -4,7 +4,7 @@ import { createStudent,getStudents } from '../controllers/studentController.js'
 const router =express.Router();
 
 router.post("/create",createStudent);
-router.get("/",getStudents);
+router.get("/get",getStudents);
 
 
 export default router;
