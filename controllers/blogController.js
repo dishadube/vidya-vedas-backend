@@ -4,8 +4,6 @@ import Blog from "../models/Blog.js";
 export const createBlog = async (req, res) => {
   try {
     const { title, content } = req.body;
-
-    // Author comes from token middleware
     const author = req.user?.id;
 
     if (!title || !content) {
@@ -18,7 +16,8 @@ export const createBlog = async (req, res) => {
 
     const blog = await Blog.create({
       title,
-      content
+      content,
+      author,
     });
 
     res.status(201).json({
@@ -48,16 +47,19 @@ export const deleteBlog = async (req, res) => {
   try {
     const { id } = req.params;
 
-    const deletedBlog = await Blog.findByIdAndDelete(id);
-
-    if (!deletedBlog) {
+    const blog = await Blog.findById(id);
+    if (!blog) {
       return res.status(404).json({ msg: "Blog not found" });
     }
 
-    res.json({
-      success: true,
-      msg: "Blog deleted successfully",
-    });
+    // only author can delete
+    if (blog.author.toString() !== req.user.id) {
+      return res.status(403).json({ msg: "Not allowed" });
+    }
+
+    await blog.deleteOne();
+
+    res.json({ success: true, msg: "Blog deleted successfully" });
   } catch (err) {
     res.status(500).json({ msg: err.message });
   }
