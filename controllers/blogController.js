@@ -18,8 +18,7 @@ export const createBlog = async (req, res) => {
 
     const blog = await Blog.create({
       title,
-      content,
-      author,
+      content
     });
 
     res.status(201).json({
