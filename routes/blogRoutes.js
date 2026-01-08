@@ -1,15 +1,9 @@
 import express from "express";
-import {
-  createBlog,
-  getBlog,
-  deleteBlog,
-} from "../controllers/blogController.js";
-import { protect } from "../middleware/auth.js";
-
+import { createBlog, getBlog } from "../controllers/blogController.js";
+import { requireAuth } from "../Middleware/auth.js";
 const router = express.Router();
 
-router.post("/create", protect, createBlog);
+router.post("/create", requireAuth, createBlog); // 👈 requireAuth added
 router.get("/", getBlog);
-router.delete("/:id", protect, deleteBlog);
 
 export default router;
